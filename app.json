@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Pacekin",
+    "slug": "pacekin",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "pacekin",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#0E3B2E",
+    "android": {
+      "package": "com.pacekin.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0E3B2E"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE"
+      ]
+    },
+    "plugins": [
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Pacekin uses your location to record your runs, including while the screen is locked.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ]
+    ],
+    "icon": "./assets/icon.png"
+  }
+}

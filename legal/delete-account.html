@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delete your Pacekin account</title>
+<style>
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:620px;margin:0 auto;padding:24px;color:#0F172A;line-height:1.6}
+h1{color:#0E3B2E}.card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:20px;margin-top:16px}
+button{font:inherit;border:0;border-radius:12px;padding:12px 18px;cursor:pointer;background:#0A2A21;color:#fff;font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:#fff;color:#0A2A21;border:1px solid #E2E8F0}
+.danger{color:#DC2626}.muted{color:#64748B}
+</style></head><body>
+<h1>Delete your Pacekin account</h1>
+<p class="muted">This page deletes your Pacekin account and personal data. You can also delete your account in the app (Profile &gt; Delete account).</p>
+
+<div class="card">
+  <h3>What will be deleted</h3>
+  <ul>
+    <li>Your profile, username, bio, profile photos and chat photos</li>
+    <li>All your runs, GPS routes, streaks, badges and personal records</li>
+    <li>Your event registrations, group memberships and friend connections</li>
+    <li>Your messages (the text is removed from your profile; other people's copies of group messages may remain without your name)</li>
+    <li>Your notifications, device tokens and AI Coach data</li>
+    <li>Your sign-in</li>
+  </ul>
+  <p class="danger"><strong>This cannot be undone.</strong> Groups you own will be closed. Some safety records are kept for up to 12 months, as described in the Privacy Policy.</p>
+</div>
+
+<div class="card" id="signed-out" hidden>
+  <p>Sign in with Google to confirm it's you. You'll be asked to sign in again before deleting.</p>
+  <button id="google">Sign in with Google</button>
+</div>
+
+<div class="card" id="signed-in" hidden>
+  <p>Signed in as <strong id="email"></strong>.</p>
+  <label><input type="checkbox" id="confirm"> I understand my account and data will be permanently deleted.</label>
+  <p style="margin-top:14px"><button id="delete" disabled>Delete my account</button></p>
+  <p id="status" class="muted"></p>
+</div>
+
+<div class="card" id="done" hidden>
+  <h3>Your account has been deleted</h3>
+  <p>Thank you for running with Pacekin. If you have questions about the deletion, contact <a href="mailto:support@yourdomain.com">support@yourdomain.com</a>.</p>
+</div>
+
+<p class="muted">Can't use this page? Email <a href="mailto:support@yourdomain.com">support@yourdomain.com</a> from the address on your account and we'll delete it for you.</p>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+// Replace these two values. The anon key is public; never put the service-role key here.
+const SUPABASE_URL = 'https://YOUR-PROJECT-REF.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, detectSessionInUrl: true } });
+
+const $ = id => document.getElementById(id);
+const show = id => ['signed-out', 'signed-in', 'done'].forEach(x => { $(x).hidden = x !== id; });
+const RECENT_MS = 5 * 60 * 1000;
+
+async function render() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return show('signed-out');
+  // Require a fresh sign-in before deletion (re-authentication).
+  const signedInAt = new Date(session.user.last_sign_in_at ?? 0).getTime();
+  if (Date.now() - signedInAt > RECENT_MS) {
+    await sb.auth.signOut();
+    $('status').textContent = 'Please sign in again to confirm it is you.';
+    return show('signed-out');
+  }
+  $('email').textContent = session.user.email ?? 'your account';
+  show('signed-in');
+}
+
+$('google').onclick = async () => {
+  const redirectTo = window.location.origin + window.location.pathname;
+  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
+  if (error) alert(error.message);
+};
+
+$('confirm').onchange = e => { $('delete').disabled = !e.target.checked; };
+
+$('delete').onclick = async () => {
+  $('delete').disabled = true;
+  $('status').textContent = 'Deleting…';
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return show('signed-out');
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${session.access_token}`, apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      body: '{}',
+    });
+    if (!res.ok) throw new Error(`server returned ${res.status}`);
+    await sb.auth.signOut();
+    show('done');
+  } catch (e) {
+    $('status').textContent = `Deletion failed (${e.message}). Try again, or email support.`;
+    $('delete').disabled = false;
+  }
+};
+
+render();
+</script>
+</body></html>

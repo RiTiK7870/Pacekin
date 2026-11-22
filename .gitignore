@@ -1,0 +1,40 @@
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+android/
+ios/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# EAS
+.eas/
+eas-build/
+
+# Signing keys
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Build files
+*.apk
+*.aab
+*.ipa
+
+# Logs
+*.log
+npm-debug.*
+yarn-error.*
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
