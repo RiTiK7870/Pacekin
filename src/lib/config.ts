@@ -32,11 +32,10 @@ export const CATEGORIES = [
 export const MIN_AGE = 16; // PLACEHOLDER policy: finalise before launch (PRD 5.2 / 31.3)
 export const SUPPORT_EMAIL = process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? 'support@example.com';
 
-// Public web pages served by the "web" edge function.
-const WEB_BASE = `${process.env.EXPO_PUBLIC_SUPABASE_URL ?? ''}/functions/v1/web`;
+// Public legal pages (GitHub Pages) and the web account-deletion page. Set these in .env.
 export const LEGAL = {
-  privacy: `${WEB_BASE}?page=privacy`,
-  terms: `${WEB_BASE}?page=terms`,
-  deletion: `${WEB_BASE}?page=delete`,
+  privacy: process.env.EXPO_PUBLIC_PRIVACY_URL ?? 'https://example.com/privacy',
+  terms: process.env.EXPO_PUBLIC_TERMS_URL ?? 'https://example.com/terms',
+  deleteAccount: process.env.EXPO_PUBLIC_DELETE_ACCOUNT_URL ?? 'https://example.com/delete-account',
 };
 
