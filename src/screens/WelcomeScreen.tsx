@@ -1,6 +1,6 @@
 import { Alert } from '../lib/alert';
 import React, { useState } from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../components/ui';
@@ -17,7 +17,7 @@ export default function WelcomeScreen() {
     finally { setBusy(false); }
   };
   return (
-    <ImageBackground source={{ uri: IMAGES.welcome }} style={{ flex: 1 }}>
+    <ImageBackground source={require('../../assets/welcome-bg.jpg')} style={{ flex: 1 }}>
       <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(10,42,33,0.96)']} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={{ flex: 1, justifyContent: 'flex-end', padding: 24 }}>
         <View style={{ alignItems: 'flex-start', marginBottom: 14 }}><Logo size={64} /></View>
