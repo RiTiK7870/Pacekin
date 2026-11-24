@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pacekin",
     "slug": "pacekin",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "scheme": "pacekin",
     "userInterfaceStyle": "light",
@@ -37,7 +37,9 @@
           "isAndroidBackgroundLocationEnabled": true,
           "isAndroidForegroundServiceEnabled": true
         }
-      ]
+      ],
+      "expo-font",
+      "@react-native-community/datetimepicker"
     ],
     "icon": "./assets/icon.png",
     "extra": {
