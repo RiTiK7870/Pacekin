@@ -8,6 +8,7 @@ export async function listChallenges() {
   const { data, error } = await supabase
     .from('challenges').select('*')
     .eq('status', 'active')
+    .gt('period_end', new Date().toISOString())
     .order('period_end', { ascending: true });
   if (error) throw error;
   const { data: mine, error: e2 } = await supabase
@@ -20,6 +21,7 @@ export async function listChallenges() {
 
 // Joining counts the runner's verified runs already inside the challenge period.
 export async function joinChallenge(c: any) {
+  if (new Date(c.period_end).getTime() <= Date.now()) throw new Error('This challenge has already ended.');
   const { data: { user } } = await supabase.auth.getUser();
   const { data: runs, error } = await supabase
     .from('runs').select('distance_m')
